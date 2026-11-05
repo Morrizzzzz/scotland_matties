@@ -1,0 +1,49 @@
+{
+  "title": "The Northern Paths",
+  "source": "SCOTLAND_HIKING.zip",
+  "crs": "EPSG:4326",
+  "routes": [
+    {
+      "id": "WHW",
+      "name": "West Highland Way",
+      "color": "#d5b476",
+      "subtitle": "From the lowlands to the high mountains",
+      "endpoints": "Milngavie → Fort William",
+      "count": 10,
+      "distance_km": 170.3793,
+      "recorded_start": "2015-09-20T08:51:00",
+      "recorded_end": "2015-09-29T09:07:00"
+    },
+    {
+      "id": "EHW",
+      "name": "East Highland Way",
+      "color": "#8eb9a4",
+      "subtitle": "Through the quiet heart of the Highlands",
+      "endpoints": "Fort William → Aviemore",
+      "count": 6,
+      "distance_km": 149.4607,
+      "recorded_start": "2014-10-01T09:50:00",
+      "recorded_end": "2014-10-06T09:56:00"
+    },
+    {
+      "id": "SSW",
+      "name": "Speyside Way",
+      "color": "#aaa5d1",
+      "subtitle": "Along the Spey, toward the northern sea",
+      "endpoints": "Aviemore → Buckie · includes side trips",
+      "count": 8,
+      "distance_km": 166.425,
+      "recorded_start": "2016-04-15T09:02:00",
+      "recorded_end": "2016-04-21T09:26:00"
+    }
+  ],
+  "feature_count": 24,
+  "vertex_count": 53129,
+  "notes": [
+    "All vertices, multipart boundaries and original DBF attributes retained.",
+    "Dates interpreted from original Dutch descriptions; no time zone supplied.",
+    "Lengths are approximate horizontal great-circle distances; gaps between parts are excluded.",
+    "Recorded Z values are displayed as metres; original vertical datum and accuracy are unspecified.",
+    "Route names are inferred from layer codes and geographic coverage. These are personal recordings, not official current trail alignments."
+  ]
+}

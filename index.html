@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#101c1c" />
+    <meta
+      name="description"
+      content="Three journeys through Scotland. Explore recorded Highland walking routes on a dark, three-dimensional fantasy atlas."
+    />
+    <title>The Northern Paths · A Scottish Walking Atlas</title>
+    <link rel="icon" href="assets/compass.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="assets/fonts.css" />
+    <link rel="stylesheet" href="vendor/maplibre-gl.css" />
+    <link rel="stylesheet" href="style.css" />
+    <script defer src="vendor/maplibre-gl.js"></script>
+    <script defer src="fallback.js"></script>
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <svg class="svg-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <symbol id="i-mountain" viewBox="0 0 24 24">
+        <path d="m2 20 7-12 4 6 3-10 6 16H2Z M6.8 11.8 9 13l1.6-1.5 M14.5 9l1.5 1.5 1.6-1.3" />
+      </symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6" /></symbol>
+      <symbol id="i-eye" viewBox="0 0 24 24">
+        <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z" />
+        <circle cx="12" cy="12" r="3" />
+      </symbol>
+      <symbol id="i-search" viewBox="0 0 24 24">
+        <circle cx="10.5" cy="10.5" r="6.5" />
+        <path d="m16 16 5 5" />
+      </symbol>
+      <symbol id="i-layers" viewBox="0 0 24 24">
+        <path d="m3 8 9-5 9 5-9 5-9-5Zm0 5 9 5 9-5M3 18l9 5 9-5" />
+      </symbol>
+      <symbol id="i-fit" viewBox="0 0 24 24">
+        <path d="M9 3H3v6m12-6h6v6M3 15v6h6m12-6v6h-6M8 12h8m-4-4v8" />
+      </symbol>
+      <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 4 12 8-12 8V4Z" /></symbol>
+      <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14" /></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24">
+        <path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4" />
+      </symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6" /></symbol>
+      <symbol id="i-share" viewBox="0 0 24 24">
+        <circle cx="18" cy="5" r="3" />
+        <circle cx="6" cy="12" r="3" />
+        <circle cx="18" cy="19" r="3" />
+        <path d="m8.5 10.5 7-4m-7 7 7 4" />
+      </symbol>
+      <symbol id="i-info" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 11v6M12 6v1" />
+      </symbol>
+    </svg>
+    <a class="skip-link" href="#sidebar">Skip to routes</a>
+    <main id="atlas">
+      <div
+        id="map"
+        aria-label="Interactive 3D map of Scotland and the uploaded hiking tracks"
+      ></div>
+      <div class="map-vignette" aria-hidden="true"></div>
+      <div id="loading" class="loading"
+        ><img src="assets/compass.svg" alt="" /><p
+          >Unfolding the atlas<span>Loading your Highland journeys</span></p
+        ></div
+      >
+      <div id="fatal" class="fatal" hidden
+        ><h2>The atlas could not open</h2><p id="fatal-message"></p
+        ><a href="data/tracks.geojson" download>Download the route data</a></div
+      >
+
+      <button id="mobile-menu" class="mobile-menu" aria-controls="sidebar" aria-expanded="false"
+        ><svg><use href="#i-layers" /></svg>Routes <span>03</span></button
+      >
+      <aside id="sidebar" class="sidebar" aria-label="Walking routes">
+        <div class="brand">
+          <div class="brand-top"
+            ><svg class="brand-mark"><use href="#i-mountain" /></svg
+            ><span>A SCOTTISH WALKING ATLAS</span
+            ><button id="close-sidebar" class="icon-button mobile-only" aria-label="Close routes"
+              ><svg><use href="#i-close" /></svg></button
+          ></div>
+          <h1>The Northern<br /><em>Paths</em></h1>
+          <p>Through glens, over mountains,<br />and onward to the sea.</p>
+          <div class="ornament" aria-hidden="true"><span></span>◇<span></span></div>
+        </div>
+        <div class="collection-stats"
+          ><div><strong>03</strong><span>PATHS</span></div
+          ><div><strong id="total-tracks">24</strong><span>RECORDINGS</span></div
+          ><div><strong id="total-km">—</strong><span>KM RECORDED</span></div></div
+        >
+        <div class="section-heading"
+          ><h2>Choose your path</h2
+          ><button id="fit-all" title="Fit all uploaded routes"
+            >View all <span>↗</span></button
+          ></div
+        >
+        <div id="route-list" class="route-list"></div>
+        <div class="track-section">
+          <div class="section-heading"
+            ><h2 id="tracks-heading">The recorded journey</h2><span id="track-count"></span
+          ></div>
+          <label class="search"
+            ><svg><use href="#i-search" /></svg
+            ><input
+              id="search"
+              type="search"
+              placeholder="Find a track or date…"
+              aria-label="Search all tracks by name, route or date"
+            /><kbd>/</kbd></label
+          >
+          <div id="track-list" class="track-list" aria-label="Recorded tracks"></div>
+        </div>
+        <footer class="sidebar-footer"
+          ><span class="status-dot"></span><span>YOUR TRACKS · 2014–2016</span
+          ><button id="about-open" class="icon-button" aria-label="About this atlas"
+            ><svg><use href="#i-info" /></svg></button
+        ></footer>
+      </aside>
+
+      <header class="map-header"
+        ><div class="map-title"
+          ><span class="eyebrow">THE NORTHERN KINGDOM</span><h2>Scotland</h2
+          ><span class="title-rule"></span></div
+        ><div class="map-toolbar"
+          ><button id="scotland-view" class="toolbar-button" aria-label="Show all Scotland"
+            ><svg><use href="#i-fit" /></svg><span>All Scotland</span></button
+          ><div class="view-toggle" role="group" aria-label="Map perspective"
+            ><button id="view-2d" aria-pressed="false">2D</button
+            ><button id="view-3d" aria-pressed="true">3D</button></div
+          ><button
+            id="settings-button"
+            class="toolbar-button square"
+            aria-expanded="false"
+            aria-controls="settings"
+            aria-label="Map settings"
+            ><svg><use href="#i-layers" /></svg></button></div
+      ></header>
+      <section id="settings" class="settings-panel" aria-label="Map settings" hidden>
+        <h3>Shape the atlas</h3>
+        <label class="switch-row"
+          ><span>Place names</span><input id="labels-toggle" type="checkbox" checked
+        /></label>
+        <label class="switch-row"
+          ><span>Terrain shading</span><input id="shade-toggle" type="checkbox" checked
+        /></label>
+        <label for="relief">Mountain height <output id="relief-value">1.8×</output></label
+        ><input id="relief" type="range" min="1" max="3" step="0.1" value="1.8" />
+        <p>Height is exaggerated for the atlas. Recorded elevations stay unchanged.</p>
+        <button id="share-view" class="text-button"
+          ><svg><use href="#i-share" /></svg>Copy this map view</button
+        >
+      </section>
+
+      <button
+        id="compass"
+        class="compass"
+        aria-label="Reset map bearing to north"
+        title="Face north"
+        ><span>N</span
+        ><svg viewBox="0 0 100 100" aria-hidden="true">
+          <circle cx="50" cy="50" r="35" />
+          <circle cx="50" cy="50" r="30" />
+          <path d="m50 8 7 35 35 7-35 7-7 35-7-35-35-7 35-7Z" />
+          <path class="needle" d="m50 8 7 35-7 7-7-7Z" />
+          <path d="m24 24 26 26 26 26M76 24 50 50 24 76" />
+          <circle cx="50" cy="50" r="4" /></svg
+      ></button>
+      <div class="map-coordinate"
+        ><span id="coordinates">56.800° N · 4.400° W</span
+        ><span id="terrain-status"><i></i>3D TERRAIN</span></div
+      >
+
+      <section
+        id="profile-panel"
+        class="profile-panel"
+        aria-label="Selected route details and elevation profile"
+      >
+        <div class="profile-summary"
+          ><div class="profile-heading"
+            ><div class="eyebrow"
+              ><span id="selection-code">WHW</span><span class="small-divider"></span
+              ><span id="selection-date">SEPTEMBER 2015</span></div
+            ><h2 id="selection-title">West Highland Way</h2
+            ><p id="selection-subtitle">Milngavie → Fort William</p></div
+          ><div class="selection-metrics"
+            ><div
+              ><strong id="selection-distance">—<small>km</small></strong
+              ><span>RECORDED</span></div
+            ><div
+              ><strong id="selection-high">—<small>m</small></strong
+              ><span>HIGHEST Z*</span></div
+            ><div
+              ><strong id="selection-count">10</strong
+              ><span id="selection-count-label">TRACKS</span></div
+            ></div
+          ><div class="profile-actions"
+            ><button id="fly-button" class="gold-button"
+              ><svg><use href="#i-play" /></svg><span>Fly the path</span></button
+            ><div class="download-buttons"
+              ><button
+                id="download-gpx"
+                class="text-button"
+                title="Download the selected route or track as GPX"
+                ><svg><use href="#i-download" /></svg>GPX</button
+              ><button
+                id="download-geojson"
+                class="text-button"
+                title="Download the selected route or track as GeoJSON"
+                >GeoJSON</button
+              ><button id="details-open" class="text-button">Details</button></div
+            ></div
+          ><button
+            id="collapse-profile"
+            class="icon-button collapse-profile"
+            aria-label="Collapse elevation profile"
+            aria-expanded="true"
+            >⌄</button
+          ></div
+        >
+        <div class="elevation-wrap"
+          ><div class="elevation-label"
+            ><span>THE RISE &amp; FALL <small>RECORDED ELEVATION*</small></span
+            ><span id="elevation-readout">Move over the profile to explore</span></div
+          ><div
+            id="profile-chart"
+            class="profile-chart"
+            tabindex="0"
+            role="img"
+            aria-label="Recorded elevation profile. Use left and right arrows to explore."
+          ></div
+          ><div class="profile-footnote"
+            ><span>*Original Z values; metres assumed. Datum unspecified.</span
+            ><span>Distances follow recordings, including detours.</span></div
+          ></div
+        >
+        <div id="tour-controls" class="tour-controls" hidden
+          ><span class="tour-light"></span><span id="tour-label">Following the path</span
+          ><input
+            id="tour-progress"
+            type="range"
+            min="0"
+            max="1000"
+            value="0"
+            aria-label="Fly-through progress"
+          /><button id="tour-stop">End journey <span>×</span></button></div
+        >
+      </section>
+      <div class="map-help"
+        >Drag to explore <span>·</span> Scroll to zoom <span>·</span> Right-drag to tilt &amp;
+        turn</div
+      >
+      <div id="toast" class="toast" role="status" hidden></div>
+    </main>
+
+    <dialog id="about-dialog"
+      ><div class="dialog-header"
+        ><span class="eyebrow">THE CARTOGRAPHER’S NOTES</span
+        ><button class="icon-button dialog-close" aria-label="Close"
+          ><svg><use href="#i-close" /></svg></button></div
+      ><h2>Real journeys.<br />A little enchantment.</h2
+      ><p
+        >A fantasy-inspired atlas of your Scotland recordings. The landscape is real; the atmosphere
+        is imagined.</p
+      ><h3>What is on the map?</h3
+      ><p
+        >All 24 records from EHW, SSW and WHW in SCOTLAND_HIKING.zip: 53,129 vertices with the
+        original attributes, heights and multipart boundaries. Route names are inferred from the
+        layer codes and locations.</p
+      ><p
+        >These recordings date from 2014–2016 and include detours and side trips. Distances are
+        approximate horizontal distances along the supplied geometry, not official trail lengths.
+        Gaps are not joined.</p
+      ><h3>Elevation &amp; terrain</h3
+      ><p
+        >The profile uses the shapefiles’ original Z values, assumed to be metres. Their vertical
+        datum and accuracy are not specified. The 3D landscape uses a separate public elevation
+        model and an adjustable height exaggeration.</p
+      ><h3>Map &amp; credits</h3
+      ><p
+        >Built with
+        <a href="https://maplibre.org/" target="_blank" rel="noopener">MapLibre GL JS</a>, with a
+        Leaflet 2D fallback for browsers without WebGL. Geographic backdrop:
+        <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a>
+        (public domain). Terrain:
+        <a href="https://registry.opendata.aws/terrain-tiles/" target="_blank" rel="noopener"
+          >Mapzen Terrain Tiles on AWS</a
+        >, with
+        <a
+          href="https://github.com/tilezen/joerd/blob/master/docs/attribution.md"
+          target="_blank"
+          rel="noopener"
+          >source credits</a
+        >. Fonts: Cinzel and Manrope (SIL Open Font License).</p
+      ><p
+        >The backdrop is deliberately a small-scale atlas. Live terrain requires an internet
+        connection. Historical recordings and this stylised map are for exploration, not current
+        trail navigation.</p
+      ><button id="download-all" class="gold-button"
+        ><svg><use href="#i-download" /></svg>Download all tracks · GeoJSON</button
+      ></dialog
+    >
+    <dialog id="details-dialog"
+      ><div class="dialog-header"
+        ><span class="eyebrow">FROM THE FIELD RECORD</span
+        ><button class="icon-button dialog-close" aria-label="Close"
+          ><svg><use href="#i-close" /></svg></button></div
+      ><h2 id="details-title"></h2><div id="details-content"></div
+    ></dialog>
+    <noscript
+      ><div class="fatal"
+        >This interactive atlas needs JavaScript.
+        <a href="data/tracks.geojson">Download the tracks</a>.</div
+      ></noscript
+    >
+  </body>
+</html>
